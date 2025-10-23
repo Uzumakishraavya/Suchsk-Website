@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Suchak - Agriculture Monitoring System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Smooth scrolling */
+        body {
+            scroll-behavior: smooth;
+            background-image: radial-gradient(circle at 10% 10%, rgba(34,197,94,0.03), transparent 10%), radial-gradient(circle at 90% 90%, rgba(99,102,241,0.02), transparent 10%);
+        }
+
+        /* Fade-in with gentle lift (used with IntersectionObserver). Staggering is applied via JS.) */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(18px) scale(.995);
+            transition: opacity 560ms cubic-bezier(.22,.9,.18,1), transform 560ms cubic-bezier(.22,.9,.18,1);
+            will-change: opacity, transform;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Button sparkle and focus */
+        .btn-cta { position: relative; overflow: hidden; }
+        .btn-cta::after {
+            content: '';
+            position: absolute; left: -40%; top: 0; width: 40%; height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06), rgba(255,255,255,0.12));
+            transform: skewX(-20deg) translateX(-100%);
+            transition: transform 650ms ease;
+        }
+        .btn-cta:hover::after { transform: skewX(-20deg) translateX(350%); }
+
+        /* Card hover tilt and depth */
+        .hover-lift {
+            transition: transform 360ms cubic-bezier(.2,.9,.3,1), box-shadow 360ms ease, filter 360ms ease;
+            transform-origin: center center;
+            will-change: transform;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px) rotateX(2deg) scale(1.01);
+            box-shadow: 0 18px 40px rgba(16,24,40,0.12);
+            filter: saturate(1.03);
+        }
+
+        /* Floating decorative shapes in hero */
+        .float { animation: float 6s ease-in-out infinite; }
+        .float-slow { animation-duration: 10s; }
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-12px) translateX(6px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        /* Gradient text accent */
+        .gradient-text {
+            background: linear-gradient(90deg,#16a34a,#059669 60% , #047857);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        /* top progress bar for reading position */
+        #progressBar {
+            position: fixed; left: 0; top: 0; height: 3px; width: 0%; background: linear-gradient(90deg,#34d399,#059669); z-index: 60; transition: width 120ms linear;
+        }
+
+        /* header shrink on scroll */
+        header { transition: backdrop-filter 220ms ease, padding 220ms ease, box-shadow 220ms ease; }
+        header.scrolled { padding-top: 6px; padding-bottom: 6px; backdrop-filter: blur(6px) saturate(120%); box-shadow: 0 6px 20px rgba(2,6,23,0.08); }
+
+        /* mobile menu animated slide */
+        #mobileMenu { overflow: hidden; max-height: 0; transition: max-height 360ms cubic-bezier(.2,.9,.18,1); }
+        #mobileMenu.open { max-height: 420px; }
+
+        /* subtle avatar pop for team */
+        .avatar {
+            width: 72px; height: 72px; display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:linear-gradient(135deg,#86efac,#34d399); color:#064e3b; font-weight:700; margin:0 auto 12px auto; box-shadow: 0 8px 22px rgba(16,24,40,0.06);
+            transform: translateY(6px); transition: transform 420ms cubic-bezier(.2,.9,.3,1), box-shadow 420ms ease;
+        }
+        .hover-lift:hover .avatar { transform: translateY(-6px) scale(1.03); box-shadow: 0 18px 40px rgba(16,24,40,0.12); }
+
+        /* small responsive tweaks */
+        @media (min-width: 768px) {
+            header { padding-top: 10px; padding-bottom: 10px; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <!-- top reading progress bar -->
+    <div id="progressBar"></div>
+
+    <!-- Header -->
+    <header class="bg-white/80 fixed w-full top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-800">Project Suchak</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="text-gray-700 hover:text-green-600 transition">Home</a>
+                <a href="#prototype" class="text-gray-700 hover:text-green-600 transition">Features</a>
+                <a href="#team" class="text-gray-700 hover:text-green-600 transition">Team</a>
+                <a href="#contact" class="text-gray-700 hover:text-green-600 transition">Contact</a>
+            </div>
+            <button class="md:hidden text-gray-700" aria-expanded="false" onclick="toggleMobileMenu(this)">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </nav>
+        <div id="mobileMenu" class="md:hidden bg-white border-t">
+            <div class="px-6 py-4 space-y-2">
+                <a href="#home" class="block text-gray-700 hover:text-green-600">Home</a>
+                <a href="#prototype" class="block text-gray-700 hover:text-green-600">Features</a>
+                <a href="#team" class="block text-gray-700 hover:text-green-600">Team</a>
+                <a href="#contact" class="block text-gray-700 hover:text-green-600">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white pt-20 relative overflow-hidden">
+        <!-- decorative floating shapes -->
+        <div class="absolute left-8 top-20 w-40 h-40 rounded-full bg-green-100 opacity-70 blur-3xl float float-slow" style="mix-blend-mode: multiply;"></div>
+        <div class="absolute right-12 top-32 w-28 h-28 rounded-full bg-emerald-100 opacity-80 blur-2xl float" style="mix-blend-mode: screen;"></div>
+        <div class="absolute left-1/2 -translate-x-1/2 bottom-8 w-96 h-40 rounded-3xl bg-gradient-to-r from-emerald-50 to-green-50 opacity-60 blur-xl float-slow"></div>
+
+        <div class="text-center px-6 md:px-0 fade-in">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4 gradient-text">Project Suchak</h1>
+            <p class="text-xl text-gray-600 mb-6">Smart Agriculture Monitoring System</p>
+            <p class="text-gray-700 mb-8 max-w-xl mx-auto">
+                A student-led agri-tech initiative under the Lodha Genius Programme at Ashoka University. Empowering farmers with real-time insights, preventing crop losses, and promoting sustainable agriculture.
+            </p>
+            <button onclick="scrollToSection('prototype')" class="btn-cta bg-green-600 text-white px-8 py-3 rounded-full hover:bg-green-700 transition">Learn More</button>
+        </div>
+    </section>
+
+    <!-- Features / Prototype Section -->
+    <section id="prototype" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center text-gray-800 mb-12 fade-in">How Suchak Works</h2>
+            <p class="text-xl text-center text-gray-600 mb-12 fade-in">Combining sensor-based data collection with real-time monitoring to help farmers make informed decisions.</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-8 rounded-xl shadow-lg text-center hover-lift fade-in bg-gradient-to-tr from-emerald-50 to-green-50">
+                    <div class="text-4xl mb-4">🌾</div>
+                    <h3 class="font-bold text-xl mb-2">Smart Sensors</h3>
+                    <p class="text-gray-600">Measure soil moisture, temperature, and fire risk in real-time.</p>
+                </div>
+                <div class="p-8 rounded-xl shadow-lg text-center hover-lift fade-in bg-gradient-to-tr from-sky-50 to-blue-50">
+                    <div class="text-4xl mb-4">☁️</div>
+                    <h3 class="font-bold text-xl mb-2">Data Analysis</h3>
+                    <p class="text-gray-600">Predict risks and provide actionable insights for farmers.</p>
+                </div>
+                <div class="p-8 rounded-xl shadow-lg text-center hover-lift fade-in bg-gradient-to-tr from-yellow-50 to-amber-50">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="font-bold text-xl mb-2">Mobile Dashboard</h3>
+                    <p class="text-gray-600">Receive alerts, track field conditions, and optimize farming operations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 fade-in">Meet the Team</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">SM</div>
+                    <h3 class="text-xl font-bold mb-2">Shraavya Mishra</h3>
+                    <p class="text-green-600 font-semibold mb-2">R&D Lead</p>
+                    <p class="text-gray-600 text-sm">Hardware & Software Integration, Outreach</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">SS</div>
+                    <h3 class="text-xl font-bold mb-2">Shivaani Shristi L.</h3>
+                    <p class="text-green-600 font-semibold mb-2">Outreach & Media</p>
+                    <p class="text-gray-600 text-sm">Social Media, Visual Communication</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">MS</div>
+                    <h3 class="text-xl font-bold mb-2">Moucham Sarma</h3>
+                    <p class="text-green-600 font-semibold mb-2">Technical Developer</p>
+                    <p class="text-gray-600 text-sm">Sensor System + Code Implementation</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">NS</div>
+                    <h3 class="text-xl font-bold mb-2">Neeraj Sarmah</h3>
+                    <p class="text-green-600 font-semibold mb-2">Technical Developer</p>
+                    <p class="text-gray-600 text-sm">Prototype Testing + Design</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">GM</div>
+                    <h3 class="text-xl font-bold mb-2">Gaurika Mehta</h3>
+                    <p class="text-green-600 font-semibold mb-2">Research & Design</p>
+                    <p class="text-gray-600 text-sm">SDG Alignment, Documentation</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow hover-lift fade-in text-center">
+                    <div class="avatar">AT</div>
+                    <h3 class="text-xl font-bold mb-2">Anubhav Thakuria</h3>
+                    <p class="text-green-600 font-semibold mb-2">R&D</p>
+                    <p class="text-gray-600 text-sm">Data Systems + Concept Design</p>   
+                </div>
+                 <!-- Aarush -->
+      <div class="bg-white p-6 rounded-2xl shadow hover-lift text-center fade-in">
+        <div class="avatar">AA</div>
+        <h3 class="text-xl font-semibold text-gray-800">Aarush R. Anandh</h3>
+        <p class="text-green-700 font-medium">Mentor & Advisor</p>
+        <p class="text-gray-600 mt-3 text-sm">
+          Providing strategic direction, technical guidance, and mentorship.
+        </p>
+      </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials Section -->
+<section id="testimonials" class="py-20 bg-white relative overflow-hidden">
+  <div class="container mx-auto px-6 text-center">
+    <h2 class="text-4xl font-bold text-gray-800 mb-12 fade-in">Testimonials</h2>
+
+    <div class="relative">
+      <!-- Carousel Wrapper -->
+      <div id="testimonial-carousel" class="flex transition-transform duration-700 ease-in-out">
+        
+        <!-- Testimonial 1 -->
+        <div class="min-w-full px-6">
+          <div class="bg-gray-50 p-8 rounded-2xl shadow hover-lift mx-auto max-w-2xl fade-in">
+            <p class="text-gray-700 italic mb-4">
+              “Project Suchak’s innovation is really required for us farmers to grow our crops better”
+            </p>
+            <div class="font-bold text-green-700">Ramesh Patnaik</div>
+            <div class="text-sm text-gray-500">Local Farmer, Odisha</div>
+          </div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="min-w-full px-6">
+          <div class="bg-gray-50 p-8 rounded-2xl shadow hover-lift mx-auto max-w-2xl fade-in">
+            <p class="text-gray-700 italic mb-4">
+              “An inspiring student project blending sustainability with real impact — a model for rural innovation.”
+            </p>
+            <div class="font-bold text-green-700">Dr. Meera Sen</div>
+            <div class="text-sm text-gray-500">Agritech Researcher</div>
+          </div>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="min-w-full px-6">
+          <div class="bg-gray-50 p-8 rounded-2xl shadow hover-lift mx-auto max-w-2xl fade-in">
+            <p class="text-gray-700 italic mb-4">
+              “Suchak’s dashboard gives farmers real-time weather and soil data in one glance — great for decision-making. Really needed”
+            </p>
+            <div class="font-bold text-green-700">Aniket Sharma</div>
+            <div class="text-sm text-gray-500">Agri Startup Mentor</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Navigation Buttons -->
+      <button id="prev" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-green-600 text-white p-3 rounded-full shadow hover:bg-green-700">
+        &#10094;
+      </button>
+      <button id="next" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-green-600 text-white p-3 rounded-full shadow hover:bg-green-700">
+        &#10095;
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Carousel Script -->
+<script>
+  const carousel = document.getElementById("testimonial-carousel");
+  const slides = carousel.children.length;
+  let index = 0;
+
+  function showSlide(i) {
+    index = (i + slides) % slides;
+    carousel.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  document.getElementById("next").onclick = () => showSlide(index + 1);
+  document.getElementById("prev").onclick = () => showSlide(index - 1);
+
+  // Auto-slide every 5 seconds
+  setInterval(() => showSlide(index + 1), 5000);
+</script>
+<!-- How It All Started Section -->
+<section id="story" class="py-24 bg-white">
+  <div class="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-12">
+
+    <!-- Image -->
+    <div class="md:w-1/2 fade-in">
+      <img src="C:\Users\ASUS\Downloads\WhatsApp Image 2025-10-23 at 4.37.01 PM.jpeg" alt="Project Suchak Journey" class="rounded-2xl shadow-lg w-full object-cover">
+    </div>
+
+    <!-- Text -->
+    <div class="md:w-1/2 fade-in">
+      <h2 class="text-4xl font-bold text-gray-800 mb-6">How It All Started</h2>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        It began as a simple idea — to help farmers make smarter decisions using real-time data. 
+        During a local science fair, we noticed how unpredictable rainfall and soil degradation were affecting crop yields. 
+        That’s when the spark for <span class="text-green-700 font-semibold">Project Suchak</span> was born.
+      </p>
+      <p class="text-gray-700 leading-relaxed mb-4">
+        What started as a basic prototype evolved into a full-fledged smart sensing system — combining 
+        <span class="text-green-700 font-medium">IoT, AI, and data analytics</span> to monitor soil and weather conditions. 
+        We built, tested, failed, and learned — but every step brought us closer to creating something meaningful.
+      </p>
+      <p class="text-gray-700 leading-relaxed">
+        Today, Project Suchak stands as a student-driven innovation aimed at empowering the backbone of our country — the farmers — 
+        with technology that listens to the earth.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+    <!-- Gallery Section -->
+<section id="gallery" class="py-20 bg-gray-50">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 fade-in">Gallery</h2>
+    <p class="text-center text-gray-600 mb-12 fade-in">A glimpse into our prototypes, field testing, and community sessions.</p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Downloads\WhatsApp Image 2025-10-23 at 4.40.38 PM.jpeg"  class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Downloads\WhatsApp Image 2025-10-23 at 4.40.34 PM.jpeg" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Downloads\WhatsApp Image 2025-10-23 at 4.37.02 PM.jpeg" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Downloads\WhatsApp Image 2025-10-23 at 4.37.01 PM.jpeg"  class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Pictures\Screenshots\Screenshot 2025-10-23 165340.png" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Pictures\Screenshots\Screenshot 2025-10-23 165354.png" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+      <div class="overflow-hidden rounded-xl shadow hover-lift fade-in">
+        <img src="C:\Users\ASUS\Pictures\Screenshots\Screenshot 2025-10-23 164954.png" class="w-full h-64 object-cover transition-transform duration-500 hover:scale-105">
+      </div>
+    </div>
+  </div>
+</section>
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 fade-in">Get in Touch</h2>
+            <form onsubmit="handleFormSubmit(event)" class="space-y-6 fade-in">
+                <input type="text" placeholder="Name" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500" required>
+                <input type="email" placeholder="Email" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500" required>
+                <textarea placeholder="Message" rows="5" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500" required></textarea>
+                <button type="submit" class="w-full btn-cta bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">Submit</button>
+            </form>
+            <div class="mt-12 text-center space-y-4 fade-in">
+                <a href="https://www.instagram.com/suchak.official/" class="block text-green-600">Instagram</a>
+                <a href="https://www.linkedin.com/company/suchakkisuno" class="block text-green-600">LinkedIn</a>
+                <a href="mailto:projectsuchak@gmail.com" class="block text-green-600">projectsuchak@gmail.com</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Project Suchak. All rights reserved.</p>
+            <p class="mt-2 text-gray-400">Empowering farmers through technology</p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            alert("Thank you! Your message has been received.");
+            event.target.reset();
+        }
+
+        // Intersection Observer for fade-in
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
