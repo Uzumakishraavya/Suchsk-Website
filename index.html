@@ -7,10 +7,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Smooth scrolling */
-        body {
-            scroll-behavior: smooth;
-            background-image: radial-gradient(circle at 10% 10%, rgba(34,197,94,0.03), transparent 10%), radial-gradient(circle at 90% 90%, rgba(99,102,241,0.02), transparent 10%);
-        }
+body {
+    scroll-behavior: smooth;
+    background-color: #9abfa5; /* soft green base */
+    background-image: 
+        radial-gradient(circle at 10% 10%, rgba(34,197,94,0.08), transparent 10%),
+        radial-gradient(circle at 90% 90%, rgba(99,102,241,0.06), transparent 10%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 
         /* Fade-in with gentle lift (used with IntersectionObserver). Staggering is applied via JS.) */
         .fade-in {
@@ -400,4 +407,5 @@
     </script>
 </body>
 </html>
+
 
